@@ -1,0 +1,81 @@
+body {
+    font-family: Cambria;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    font-size: 60px;
+    text-align: center;
+    background-color: #aaa;
+    margin-bottom: 10px;
+}
+
+header a {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+}
+
+header a:hover {
+    color: #00f;
+}
+
+.posts {
+    margin: 0 10%;
+}
+
+.entry {
+    text-decoration: none;
+    color: black;
+    margin: 0;
+    padding: 0;
+}
+
+.entry:hover {
+    color: #00f;
+}
+
+.entry div {
+    padding: 2% 0;
+    /* border-style: solid; */
+    overflow: hidden;
+}
+
+.entry div h1 {
+    float: left;
+    margin: 0;
+    padding: 0;
+    font-size: 40px;
+}
+
+.entry div h2 {
+    float: right;
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
+}
+
+.post {
+    margin: 0 20%;
+}
+
+.title {
+    font-size: 50px;
+    margin-bottom: 0;
+}
+
+p {
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+pre {
+    background-color: #aaa;
+    padding: 5px;
+}
+
+code {
+    font-size: 15px;
+}
