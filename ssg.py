@@ -5,6 +5,7 @@ import os
 from os import path
 import re
 import time
+import shutil
 from typing import List
 
 # just so I don't have to run these commands
@@ -103,8 +104,7 @@ def main():
         rendered = chevron.render(f, {'posts': posts})
     with open('build/index.html', 'w') as f:
         f.write(rendered)
-    if not os.path.exists('build/style'):
-        os.symlink('../style', 'build/style')
+    shutil.copytree('style', 'build/style', dirs_exist_ok=True)
 
 
 if __name__ == '__main__':
