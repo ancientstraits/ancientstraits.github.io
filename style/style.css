@@ -24,7 +24,7 @@ header a:hover {
 }
 
 .posts {
-    margin: 0 10%;
+    margin: 0 0%;
 }
 
 .entry {
@@ -99,4 +99,8 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+@media screen and (max-width: 600px) {
+    
 }
