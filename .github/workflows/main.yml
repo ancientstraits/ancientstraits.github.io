@@ -19,6 +19,7 @@ jobs:
 
       - name: Install and Build
         run: |
+          pip install markdown chevron # My import trick doesn't work here...
           ./ssg.py
 
       - name: Deploy
