@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/vs.min.css">
+    <link rel="stylesheet" href="style/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <script>hljs.highlightAll()</script>
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">Welcome To My Blog</h1>
+        <h2 class="date">4 May 2022 at 01:56 AM</h2>
+        <hr>
+        <div class="content">
+            <h1>Introduction</h1>
+<p>This is my blog, which I made using a Python script.
+The source code for the blog is available on <a href="https://github.com/ancientstraits/ancientstraits.github.io">my GitHub repository</a>.</p>
+<h1>A Trick In Python</h1>
+<p>I have automated the process of running <code>ssg.py</code> on GitHub pages,
+meaning that I can write the blog post on the GitHub website, commit it, and it will
+build it for me.
+My blog script, <code>ssg.py</code> (stands for Static Site Generator),
+uses the modules <code>markdown</code> and <code>chevron</code>.
+However, I want to install them without having to type the commands into the
+GitHub configuration file.</p>
+<p>There is a trick that can be done to automatically install any module if it doesn't exist:</p>
+<pre><code class="language-py">import os
+
+try:
+    import &lt;module&gt;
+except ImportError:
+    os.system('pip3 install &lt;module&gt;')
+    import &lt;module&gt;
+</code></pre>
+<p>Some may say it's cursed, I say it's a great feature.</p>
+<h1>How it Works</h1>
+<p>In the <code>src</code> folder, my blog posts reside in Markdown format.
+Their filename are in snake_case and are converted to Title Case by the script.
+For example, this article is called <code>welcome_to_my_blog.md</code>,
+so the title you see is "Welcome To My Blog".
+This means that the filename is the title, so I don't need to write it in my Markdown file.</p>
+<h2>The <code>PostDate</code> class</h2>
+<p>I made a new <code>PostDate</code> class in order to format the dates like how they would be
+in a blog (not like the ISO format):</p>
+<pre><code class="language-py">class PostDate:
+    dt: datetime
+
+    def __init__(self, dt: datetime):
+        self.dt = dt
+
+    def __str__(self) -&gt; str:
+        return self.dt.strftime('%w %b %Y at %I:%M %p')
+</code></pre>
+<p>This means that a template file can just say <code>{{date}}</code> for a <code>PostDate</code> object <code>date</code>,
+and my script will format the date correctly.</p>
+<h2>Classes in Python are Nice</h2>
+<p>I defined a class in Python to hold my post:</p>
+<pre><code class="language-py">class Post:
+    title:   str
+    url:     str
+    date:    PostDate
+    content: str
+</code></pre>
+<p>The best part of putting all the attributes in a class in this case is that
+the templating engine <code>chevron</code> can easily use these variables:</p>
+<pre><code class="language-py">with open('template/post.html', 'r') as f:
+    rendered = chevron.render(f, self.__dict__)
+</code></pre>
+<p><code>chevron</code> takes in a <code>dict</code> for variables, but luckily in scripting languages like Python,
+it is easy to convert between an object and <code>dict</code>. In Ruby, you use the <code>.attributes</code> method
+to convert an object to a hash, and in Javascript, the object is already a hash.
+I wonder how difficult it would be to do the same thing in C.</p>
+<h1>Sorting by Date</h1>
+<p>The landing page of this blog has a list of blogs sorted by date. I easily did that with this
+function:</p>
+<pre><code class="language-py">def add_and_sort(posts: List[Post], post: Post):
+    index = 0
+    for i in range(len(posts) - 1):
+        if posts[i].date.dt &gt;= post.date.dt &gt;= posts[i + 1].date.dt:
+            index = i
+            break
+    posts.insert(index, post)
+</code></pre>
+<p>Focus on the line starting with <code>if</code>. in C, that statement would be more like:</p>
+<pre><code class="language-c">if (date_cmp(posts[i].date.dt, post.date.dt) &gt;= 0
+    &amp;&amp; date_cmp(post, posts[i + 1].date.dt) &gt;= 0)
+</code></pre>
+<h1>The Highlighting Process</h1>
+<p>As you can see in the code blocks, this code is highlighted. How does this work?
+I used the "Fenced Code Blocks" python-markdown extension while processing the
+markdown in my script:</p>
+<pre><code class="language-py">def compile(self):
+    self.content = markdown(self.content, extensions=['fenced_code'])
+</code></pre>
+<p>Whenever this extension detects a markdown code block that has a name after the
+opening three backticks, it adds it to a class based on the name.
+For example, for the upper code block:</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class=&quot;language-py&quot;&gt;
+def compile(self):
+    self.content = markdown(self.content, extensions=['fenced_code'])
+&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
+<p>The script <code>highlight.js</code> recognizes this, and highlights the code. It is the only
+client-side code in my site (besides the obligatory method call to it), so my blog is
+very minimal and fast. Although <code>highlight.js</code> highlights on the client-side, it
+just doesn't feel like it, because it runs extremely quickly.</p>
+<h1>Rewrite in C?</h1>
+<p>I am comparing everything to C because I regularly use C to write applications.
+However, I realized that C might not be a great idea for an application like this.</p>
+<p>Still, I love the C programming language for its simplicity and speed, which is why
+I write so many programs in C. I will eventually rewrite this program in C, and I
+will write a blog post about that new program.</p>
+<h1>Frontend Design</h1>
+<p>The last thing I want to talk about is designing the frontend. As a systems developer,
+this at first seems easy, but gets very difficult. I have to keep looking things up
+about CSS, and I have to make sure everything looks just right.
+Eventually, though, I got to my current style, and I think it looks very beautiful.
+The borders on the code blocks were actually unintentional, as they were a side efect
+of this CSS:</p>
+<pre><code class="language-css">pre {
+    background-color: #333;
+    padding: 10px;
+}
+</code></pre>
+<p>Although there is no actual border, the padding of the <code>pre</code> element combined with its
+dark color against my <code>highlight.js</code> theme's light background color creates the border. I actually find it very nice, and I think it goes well with my website.</p>
+        </div>
+    </div>
+</body>
+</html>
