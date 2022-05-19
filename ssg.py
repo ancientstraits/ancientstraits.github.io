@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 import os
 from os import path
 import re
-import shutil
+import time
+from typing import List
 
 # just so I don't have to run these commands
 try:
@@ -15,8 +16,8 @@ except ImportError:
 try:
     import chevron
 except ImportError:
-    os.system('pip3 install markdown')
-    from markdown import markdown
+    os.system('pip3 install chevron')
+    import chevron
 
 
 def title_case(snake: str) -> str:
@@ -76,13 +77,15 @@ class Post:
         with open(filename, 'w', encoding='utf-8', errors='xmlcharrefreplace') as f:
             f.write(rendered)
 
-def add_and_sort(posts: [dict], post: dict):
+
+def add_and_sort(posts: List[Post], post: Post):
     index = 0
     for i in range(len(posts) - 1):
-        if posts[i]['date'].dt >= post['date'].dt >= posts[i + 1]['date'].dt:
+        if posts[i].date.dt >= post.date.dt >= posts[i + 1].date.dt:
             index = i
             break
     posts.insert(index, post)
+
 
 def main():
     check_dir('build')
@@ -92,7 +95,9 @@ def main():
         p = Post(filename)
         p.compile()
         p.write()
-        add_and_sort(posts, p.__dict__)
+        add_and_sort(posts, p)
+
+    map(lambda p: p.__dict__, posts)
 
     with open('template/index.html', 'r') as f:
         rendered = chevron.render(f, {'posts': posts})
