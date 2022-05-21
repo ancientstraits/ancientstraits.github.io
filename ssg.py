@@ -79,15 +79,6 @@ class Post:
             f.write(rendered)
 
 
-def add_and_sort(posts: List[Post], post: Post):
-    index = 0
-    for i in range(len(posts) - 1):
-        if posts[i].date.dt >= post.date.dt >= posts[i + 1].date.dt:
-            index = i
-            break
-    posts.insert(index, post)
-
-
 def main():
     check_dir('build')
 
@@ -96,7 +87,9 @@ def main():
         p = Post(filename)
         p.compile()
         p.write()
-        add_and_sort(posts, p)
+        posts.append(p)
+
+    posts.sort(reverse=True, key=lambda p: p.date.dt)
 
     map(lambda p: p.__dict__, posts)
 
