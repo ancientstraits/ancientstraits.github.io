@@ -16,7 +16,7 @@
     </a></header>
     <div class="post">
         <h1 class="title">Declarative Programming</h1>
-        <h2 class="date">6 May 2022 at 02:26 AM</h2>
+        <h2 class="date">6 May 2022 at 02:42 AM</h2>
         <hr>
         <div class="content">
             <p>The reader (that is you) must have learnt about declarative programming.
@@ -114,10 +114,12 @@ function main()
     } or nil
 end
 </code></pre>
-<p>The above code sample takes advantage of many things in Lua:
-- Lua's <code>and / or</code> functions like a ternary statement, so we can use it to set the length of a video. In this case, the video is 5 seconds long. The video will end once <code>nil</code> is returned.
-- In Lua, whenever a function is called with one string or one table, the parentheses in the function call are optional. This means that <code>fn('abc')</code> and <code>fn 'abc'</code> are the same, as well as <code>fn({a = 1})</code> and <code>fn{a = 1}</code>. This can save clutter when writing components.
-- Lua's tables (<code>{}</code>) are the only non-scalar data structure, so they are both objects and arrays. Whenever the key isn't specified in an array, like <code>rect{}</code> in <code>main</code>, it will get assigned to an integer index, starting from 1. This means that the key of <code>rect{}</code> implicitly is 1. By assuming that a component's properties are string indices and a component's children are at integer indices, we can easily specify both the properties and children in one table.</p>
+<p>The above code sample takes advantage of many things in Lua:</p>
+<ul>
+<li>Lua's <code>and / or</code> functions like a ternary statement, so we can use it to set the length of a video. In this case, the video is 5 seconds long. The video will end once <code>nil</code> is returned.</li>
+<li>In Lua, whenever a function is called with one string or one table, the parentheses in the function call are optional. This means that <code>fn('abc')</code> and <code>fn 'abc'</code> are the same, as well as <code>fn({a = 1})</code> and <code>fn{a = 1}</code>. This can save clutter when writing components.</li>
+<li>Lua's tables (<code>{}</code>) are the only non-scalar data structure, so they are both objects and arrays. Whenever the key isn't specified in an array, like <code>rect{}</code> in <code>main</code>, it will get assigned to an integer index, starting from 1. This means that the key of <code>rect{}</code> implicitly is 1. By assuming that a component's properties are string indices and a component's children are at integer indices, we can easily specify both the properties and children in one table.</li>
+</ul>
 <h1>Declarative Is Not Always Better</h1>
 <p>While the above example of declarative programming might seem nice, it might be bad when we want to render multiple things in succession. One would have to do some magic to make sure everything comes one after another in time. In this case, imperative animation succeeds.
 Take an example from Manim, which uses a more imperative API:</p>
