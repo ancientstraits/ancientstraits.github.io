@@ -104,6 +104,7 @@ function main()
 end
 ```
 The above code sample takes advantage of many things in Lua:
+
 - Lua's `and / or` functions like a ternary statement, so we can use it to set the length of a video. In this case, the video is 5 seconds long. The video will end once `nil` is returned.
 - In Lua, whenever a function is called with one string or one table, the parentheses in the function call are optional. This means that `fn('abc')` and `fn 'abc'` are the same, as well as `fn({a = 1})` and `fn{a = 1}`. This can save clutter when writing components.
 - Lua's tables (`{}`) are the only non-scalar data structure, so they are both objects and arrays. Whenever the key isn't specified in an array, like `rect{}` in `main`, it will get assigned to an integer index, starting from 1. This means that the key of `rect{}` implicitly is 1. By assuming that a component's properties are string indices and a component's children are at integer indices, we can easily specify both the properties and children in one table.

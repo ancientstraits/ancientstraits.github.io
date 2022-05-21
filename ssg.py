@@ -69,7 +69,7 @@ class Post:
             self.content = f.read()
 
     def compile(self):
-        self.content = markdown(self.content, extensions=['fenced_code'])
+        self.content = markdown(self.content, extensions=['fenced_code', 'sane_lists'])
 
     def write(self):
         filename = path.join('build', snake_case(self.title)) + '.html'
