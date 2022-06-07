@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
 
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 import os
 from os import path
 import re
 import time
 import shutil
+import subprocess
 from typing import List
 
-# just so I don't have to run these commands
-try:
-    from markdown import markdown
-except ImportError:
-    os.system('pip3 install markdown')
-    from markdown import markdown
-try:
-    import chevron
-except ImportError:
-    os.system('pip3 install chevron')
-    import chevron
+from markdown import markdown
+import chevron
 
 
 def title_case(snake: str) -> str:
@@ -36,8 +29,12 @@ def snake_case(title: str) -> str:
 
 
 def file_date(filename: str) -> datetime:
-    mtime = os.stat(filename).st_mtime
-    return datetime.fromtimestamp(mtime, tz=timezone.utc)
+	date = subprocess.check_output([
+		'git', 'log', '--follow',
+		'--format=%ad', '--date=default',
+		filename,
+	]).decode('utf-8').split('\n')[-2]
+	return parsedate_to_datetime(date)
 
 
 def check_dir(dirname: str):
