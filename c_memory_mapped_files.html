@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AncientStraits</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/vs.min.css">
+    <link rel="stylesheet" href="style/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <script>hljs.highlightAll()</script>
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">C Memory Mapped Files</h1>
+        <h2 class="date">2 Jun 2022 at 03:40 PM</h2>
+        <hr>
+        <div class="content">
+            <h1>Introduction</h1>
+<p>My favorite way to read files as of writing this is via memory-mapped file IO.
+Using this technique creates a buffer based on the file which can be read from like a string.
+No <code>fread()</code>, <code>fgets()</code>, <code>fgetc()</code>, or any of that.
+It also is not needed to <code>malloc()</code> a whole new memory buffer and copy the file contents to it.
+However, there is not much information on how to do this online, especially when compared to other, perhaps inferior, techniques.
+My favorite (and only) resource of recounting how this technique works is <a href="https://www.youtube.com/watch?v=m7E9piHcfr4">Jacob Sorber's video</a>, and I am writing this post so I can more quickly find out how to use memory-mapped files if I ever forget.</p>
+<h1>The Code</h1>
+<pre><code class="language-c">int main() {
+    // First, open the file
+    int fd = open(&quot;filename&quot;, O_RDONLY);
+    // Then, get the length of the file
+    struct stat sb;
+    fstat(fd, &amp;sb);
+    // sb.st_size is the length
+    // Finally, use `mmap()`
+    char* file = mmap(NULL,
+        sb.st_size, // the memory region should be as large as the file
+        PROT_READ, // readonly memory
+        MAP_PRIVATE, // can probably also be `MAP_SHARED`
+        fd, // get the data from our file descriptor
+        0 // start at the file's beginning
+    );
+
+    // `file` can be used like any other memory buffer
+    // For example, the following code prints the file
+    for (int i = 0; i &lt; sb.st_size; i++)
+        putchar(file[i]);
+
+    // Finish everything
+    munmap(file, sb.st_size);
+    close(fd);
+}
+</code></pre>
+<h1>Conclusion</h1>
+<p><code>mmap()</code> is a great file IO method, since it is both easy to write and also speedy.
+One problem is that <code>mmap()</code> is POSIX, meaning that it works on Linux, MacOS, and other Unix operating systems, but not Windows.
+However, this caveat is a minor afterthought to me, since I have not used Windows for more than a year.</p>
+        </div>
+    </div>
+</body>
+</html>
