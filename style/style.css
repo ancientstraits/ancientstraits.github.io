@@ -23,10 +23,6 @@ header a:hover {
     color: #00f;
 }
 
-.posts {
-    margin: 0 0%;
-}
-
 .entry {
     text-decoration: none;
     color: black;
@@ -42,24 +38,23 @@ header a:hover {
     padding: 2% 0;
     /* border-style: solid; */
     overflow: hidden;
+	text-align: center;
 }
 
 .entry div h1 {
-    float: left;
     margin: 0;
     padding: 0;
     font-size: 40px;
 }
 
 .entry div h2 {
-    float: right;
     margin: 0;
     padding: 0;
     font-size: 30px;
     font-weight: normal;
 }
 
-.post {
+.post, .posts {
     margin: 0 20%;
 }
 
@@ -102,7 +97,7 @@ img {
 }
 
 @media screen and (max-width: 900px) {
-    .post {
+    .post, .posts {
         margin: 0 5%;
     }
 }
