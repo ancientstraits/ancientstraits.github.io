@@ -29,12 +29,12 @@ def snake_case(title: str) -> str:
 
 
 def file_date(filename: str) -> datetime:
-	date = subprocess.check_output([
-		'git', 'log', '--follow',
-		'--format=%ad', '--date=default',
-		filename,
-	]).decode('utf-8').split('\n')[-2]
-	return parsedate_to_datetime(date)
+    date = subprocess.check_output([
+        'git', 'log', '--follow',
+        '--format=%ad', '--date=default',
+        filename,
+    ]).decode('utf-8').split('\n')[-2]
+    return parsedate_to_datetime(date)
 
 
 def check_dir(dirname: str):
