@@ -20,6 +20,11 @@ jobs:
       - name: Install and Build
         run: |
           pip install markdown chevron # My import trick doesn't work here...
+          for FILE in src/*.md; do
+            echo $FILE
+            git log --follow --format=%ad --date=default $FILE
+            echo
+          done
           ./ssg.py
 
       - name: Deploy
