@@ -33,7 +33,7 @@ def file_date(filename: str) -> datetime:
         'git', 'log', '--follow',
         '--format=%ad', '--date=default',
         filename,
-    ]).decode('utf-8').split('\n')[-2]
+    ]).decode('utf-8').split('\n')[0]
     return parsedate_to_datetime(date)
 
 
