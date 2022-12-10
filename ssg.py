@@ -11,7 +11,10 @@ import subprocess
 from typing import List
 
 from markdown import markdown
+from markdown.extensions.codehilite import CodeHiliteExtension
 import chevron
+import pygments
+import pygments.formatters
 
 
 def title_case(snake: str) -> str:
@@ -42,6 +45,11 @@ def check_dir(dirname: str):
         os.mkdir(dirname)
 
 
+def pygments_css(style: str, arg='.codehilite') -> str:
+    fmt = pygments.formatters.html.HtmlFormatter(style=style)
+    return fmt.get_style_defs(arg=arg)
+
+
 class PostDate:
     dt: datetime
 
@@ -66,7 +74,7 @@ class Post:
             self.content = f.read()
 
     def compile(self):
-        self.content = markdown(self.content, extensions=['fenced_code', 'sane_lists'])
+        self.content = markdown(self.content, extensions=['fenced_code', 'codehilite', 'sane_lists'])
 
     def write(self):
         filename = path.join('build', snake_case(self.title)) + '.html'
@@ -94,7 +102,10 @@ def main():
         rendered = chevron.render(f, {'posts': posts})
     with open('build/index.html', 'w') as f:
         f.write(rendered)
+
     shutil.copytree('style', 'build/style', dirs_exist_ok=True)
+    with open('build/style/codehilite.css', 'w') as f:
+        f.write(pygments_css(style='gruvbox-dark'))
 
 
 if __name__ == '__main__':
