@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AncientStraits</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/vs.min.css">
     <link rel="stylesheet" href="style/style.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="style/codehilite.css">
     <script>hljs.highlightAll()</script>
 </head>
 <body>
@@ -27,23 +26,24 @@ I have thought about declarative programming and how it could change my library'
 instead of telling it to perform the steps in that action.
 This means that functions can be a type of declarative structure.
 For example, in Codim:</p>
-<pre><code class="language-c">static AVFrame* create_video_frame(AVCodecContext* vcc) {
-    AVFrame* ret = av_frame_alloc();
+<div class="codehilite"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="n">AVFrame</span><span class="o">*</span><span class="w"> </span><span class="nf">create_video_frame</span><span class="p">(</span><span class="n">AVCodecContext</span><span class="o">*</span><span class="w"> </span><span class="n">vcc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">AVFrame</span><span class="o">*</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">av_frame_alloc</span><span class="p">();</span><span class="w"></span>
 
-    ret-&gt;format = vcc-&gt;pix_fmt;
-    ret-&gt;width  = vcc-&gt;width;
-    ret-&gt;height = vcc-&gt;height;
-    av_frame_get_buffer(ret, 0);
+<span class="w">    </span><span class="n">ret</span><span class="o">-&gt;</span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcc</span><span class="o">-&gt;</span><span class="n">pix_fmt</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">ret</span><span class="o">-&gt;</span><span class="n">width</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">vcc</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">ret</span><span class="o">-&gt;</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcc</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">av_frame_get_buffer</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 
-    return ret;
-}
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-void output_context_open(OutputContext* oc) {
-    // ...
-    oc-&gt;vf = create_video_frame(oc-&gt;vcc);
-    // ...
-}
-</code></pre>
+<span class="kt">void</span><span class="w"> </span><span class="nf">output_context_open</span><span class="p">(</span><span class="n">OutputContext</span><span class="o">*</span><span class="w"> </span><span class="n">oc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="n">oc</span><span class="o">-&gt;</span><span class="n">vf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_video_frame</span><span class="p">(</span><span class="n">oc</span><span class="o">-&gt;</span><span class="n">vcc</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
 <p>The line starting with <code>oc-&gt;vf</code> could be called "declarative programming" because it just
 tells a computer to let <code>oc-&gt;vf</code> be a video frame based on <code>oc-&gt;vcc</code>'s settings.</p>
 <h1>"Markup-style" declarative programming</h1>
@@ -51,40 +51,44 @@ tells a computer to let <code>oc-&gt;vf</code> be a video frame based on <code>o
 that it's still primarily imperative, because it's using an imperative library in an
 imperative programming language. The reader's first thought when hearing the word
 "declarative programming" might be a React component:</p>
-<pre><code class="language-js">const MyComponent = ({time}) =&gt; (
-    &lt;div style={{color: 'blue'}}&gt;
-        &lt;h1&gt;The Time&lt;/h1&gt;
-        &lt;p&gt;The time is {time}.&lt;/p&gt;
-    &lt;/div&gt;
-)
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span> <span class="nx">MyComponent</span> <span class="o">=</span> <span class="p">({</span><span class="nx">time</span><span class="p">})</span> <span class="p">=&gt;</span> <span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">}}</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">The</span> <span class="nx">Time</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">The</span> <span class="nx">time</span> <span class="nx">is</span> <span class="p">{</span><span class="nx">time</span><span class="p">}.</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="p">)</span>
+</code></pre></div>
+
 <p>In this case, <code>MyComponent</code> is declarative because it is returning the UI,
 instead of telling some context to change each property.
 The result is something a lot like markup, but in a programming language.
 The opposite of this is the JavaScript canvas API:</p>
-<pre><code class="language-js">ctx.fillStyle = '#123456'
-ctx.fillRect(12, 34, 56, 78)
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nx">ctx</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s1">&#39;#123456&#39;</span>
+<span class="nx">ctx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mf">12</span><span class="p">,</span> <span class="mf">34</span><span class="p">,</span> <span class="mf">56</span><span class="p">,</span> <span class="mf">78</span><span class="p">)</span>
+</code></pre></div>
+
 <p>The UI is not being returned all at once, and is being applied to a context.</p>
 <h1>The Significance of Declarative Programming in Animation</h1>
 <p>Although it wouldn't hurt to write the canvas code above instead of using a React component,
 it gets much worse when trying to draw something animated:</p>
-<pre><code class="language-js">let x = 0;
-const loop = () =&gt; {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillRect(x, 100, 20, 20)
-    x++
-    requestAnimationFrame(loop)
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">loop</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">clearRect</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">)</span>
+    <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="mf">100</span><span class="p">,</span> <span class="mf">20</span><span class="p">,</span> <span class="mf">20</span><span class="p">)</span>
+    <span class="nx">x</span><span class="o">++</span>
+    <span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="nx">loop</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p>Definitely not something you can return. This could also not use iteration/recursion if the API stored the current time. Then it could all be declarative.</p>
-<pre><code class="language-js">const Rect = () =&gt; {
-    const frame = useCurrentFrame()
-    return (&lt;svg&gt;
-        &lt;rect x={frame} y=&quot;100&quot; width=&quot;20&quot; height=&quot;20&quot;&gt;
-    &lt;/svg&gt;)
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span> <span class="nx">Rect</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">frame</span> <span class="o">=</span> <span class="nx">useCurrentFrame</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">svg</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">rect</span> <span class="nx">x</span><span class="o">=</span><span class="p">{</span><span class="nx">frame</span><span class="p">}</span> <span class="nx">y</span><span class="o">=</span><span class="s2">&quot;100&quot;</span> <span class="nx">width</span><span class="o">=</span><span class="s2">&quot;20&quot;</span> <span class="nx">height</span><span class="o">=</span><span class="s2">&quot;20&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="err">/svg&gt;)</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p>The above example is easy to understand because it just makes a vector of a rect with its
 x value assigned to the frame number. No looping, which is done internally by the framework.
 Speaking of the framework, the above code is actually valid syntax for Remotion, an animation
@@ -94,26 +98,27 @@ Why am I not using Manim either? Because it's written mainly for math animations
 <p>Codim will use LuaJIT for scripting, because Lua is very light and LuaJIT is faster than Node.
 It it easy to maintain a declarative syntax in a scripting language like Lua.
 One idea I have for the API is this:</p>
-<pre><code class="language-lua">local cm = require('codim')
+<div class="codehilite"><pre><span></span><code><span class="kd">local</span> <span class="n">cm</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;codim&#39;</span><span class="p">)</span>
 
-function rect()
-    return cm.rect {
-        x = cm.frame,
-        y = 100,
-        width  = 20,
-        height = 20,
-    }
-end
+<span class="kr">function</span> <span class="nf">rect</span><span class="p">()</span>
+    <span class="kr">return</span> <span class="n">cm</span><span class="p">.</span><span class="n">rect</span> <span class="p">{</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">cm</span><span class="p">.</span><span class="n">frame</span><span class="p">,</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">width</span>  <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="kr">end</span>
 
-function main()
-    return cm.frame &lt;= 5 and cm.output{
-        width  = 1920,
-        height = 1080,
-        fps    = 24,
-        rect{},
-    } or nil
-end
-</code></pre>
+<span class="kr">function</span> <span class="nf">main</span><span class="p">()</span>
+    <span class="kr">return</span> <span class="n">cm</span><span class="p">.</span><span class="n">frame</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">cm</span><span class="p">.</span><span class="n">output</span><span class="p">{</span>
+        <span class="n">width</span>  <span class="o">=</span> <span class="mi">1920</span><span class="p">,</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mi">1080</span><span class="p">,</span>
+        <span class="n">fps</span>    <span class="o">=</span> <span class="mi">24</span><span class="p">,</span>
+        <span class="n">rect</span><span class="p">{},</span>
+    <span class="p">}</span> <span class="ow">or</span> <span class="kc">nil</span>
+<span class="kr">end</span>
+</code></pre></div>
+
 <p>The above code sample takes advantage of many things in Lua:</p>
 <ul>
 <li>Lua's <code>and / or</code> functions like a ternary statement, so we can use it to set the length of a video. In this case, the video is 5 seconds long. The video will end once <code>nil</code> is returned.</li>
@@ -123,18 +128,19 @@ end
 <h1>Declarative Is Not Always Better</h1>
 <p>While the above example of declarative programming might seem nice, it might be bad when we want to render multiple things in succession. One would have to do some magic to make sure everything comes one after another in time. In this case, imperative animation succeeds.
 Take an example from Manim, which uses a more imperative API:</p>
-<pre><code class="language-py">class SquareToCircle(Scene):
-    def construct(self):
-        circle = Circle()  # create a circle
-        circle.set_fill(PINK, opacity=0.5)  # set color and transparency
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SquareToCircle</span><span class="p">(</span><span class="n">Scene</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">construct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">()</span>  <span class="c1"># create a circle</span>
+        <span class="n">circle</span><span class="o">.</span><span class="n">set_fill</span><span class="p">(</span><span class="n">PINK</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># set color and transparency</span>
 
-        square = Square()  # create a square
-        square.rotate(PI / 4)  # rotate a certain amount
+        <span class="n">square</span> <span class="o">=</span> <span class="n">Square</span><span class="p">()</span>  <span class="c1"># create a square</span>
+        <span class="n">square</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">PI</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># rotate a certain amount</span>
 
-        self.play(Create(square))  # animate the creation of the square
-        self.play(Transform(square, circle))  # interpolate the square into the circle
-        self.play(FadeOut(square))  # fade out animation
-</code></pre>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Create</span><span class="p">(</span><span class="n">square</span><span class="p">))</span>  <span class="c1"># animate the creation of the square</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Transform</span><span class="p">(</span><span class="n">square</span><span class="p">,</span> <span class="n">circle</span><span class="p">))</span>  <span class="c1"># interpolate the square into the circle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">FadeOut</span><span class="p">(</span><span class="n">square</span><span class="p">))</span>  <span class="c1"># fade out animation</span>
+</code></pre></div>
+
 <p>Although React users would call this imperative, I really think it is more declarative than React. In this code sample, it is very easy to understand what will happen. A square rotated 45 degrees counterclockwise will be created, then will be animated into a pink, transparent circle, which will fade out. Notice that there are no dimensions or time measurement here - the only numbers are <code>PI / 4</code> and <code>0.5</code>. The programmer is telling the computer to perform an action instead of telling it how to, then trusting it to generate something suitable. This is the definition of declarative I defined at the start of this post. The programmer does not have to write any complicated components that vary dependent on time, that programmer just has to trust Manim that it will make a good video.</p>
 <h1>The Quality of the Videos</h1>
 <p>The Python sample above creates <a href="https://docs.manim.community/en/stable/tutorials/SquareToCircle2-1.mp4">the video here</a>. Notice how much has been defined by the library itself - and for the better. The most beautiful generated videos are made declaratively, where the polish can be added in the library implementation. Once it is added, it becomes the reason that 3Blue1Brown's YouTube videos look so spectacular. It not only creates something good, but the code also looks good. This has to be the best fit for Codim - to let most things be as declarative as possible, so that there is as much potential to make beautiful videos as possible.</p>

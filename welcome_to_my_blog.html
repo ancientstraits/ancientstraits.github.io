@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AncientStraits</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/vs.min.css">
     <link rel="stylesheet" href="style/style.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="style/codehilite.css">
     <script>hljs.highlightAll()</script>
 </head>
 <body>
@@ -31,14 +30,15 @@ uses the modules <code>markdown</code> and <code>chevron</code>.
 However, I want to install them without having to type the commands into the
 GitHub configuration file.</p>
 <p>There is a trick that can be done to automatically install any module if it doesn't exist:</p>
-<pre><code class="language-py">import os
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
 
-try:
-    import &lt;module&gt;
-except ImportError:
-    os.system('pip3 install &lt;module&gt;')
-    import &lt;module&gt;
-</code></pre>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;pip3 install &lt;module&gt;&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+</code></pre></div>
+
 <p>Some may say it's cursed, I say it's a great feature.</p>
 <h1>How it Works</h1>
 <p>In the <code>src</code> folder, my blog posts reside in Markdown format.
@@ -49,30 +49,33 @@ This means that the filename is the title, so I don't need to write it in my Mar
 <h2>The <code>PostDate</code> class</h2>
 <p>I made a new <code>PostDate</code> class in order to format the dates like how they would be
 in a blog (not like the ISO format):</p>
-<pre><code class="language-py">class PostDate:
-    dt: datetime
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">PostDate</span><span class="p">:</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">datetime</span>
 
-    def __init__(self, dt: datetime):
-        self.dt = dt
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="n">datetime</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
 
-    def __str__(self) -&gt; str:
-        return self.dt.strftime('%w %b %Y at %I:%M %p')
-</code></pre>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%w %b %Y at %I:%M %p&#39;</span><span class="p">)</span>
+</code></pre></div>
+
 <p>This means that a template file can just say <code>{{date}}</code> for a <code>PostDate</code> object <code>date</code>,
 and my script will format the date correctly.</p>
 <h2>Classes in Python are Nice</h2>
 <p>I defined a class in Python to hold my post:</p>
-<pre><code class="language-py">class Post:
-    title:   str
-    url:     str
-    date:    PostDate
-    content: str
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">Post</span><span class="p">:</span>
+    <span class="n">title</span><span class="p">:</span>   <span class="nb">str</span>
+    <span class="n">url</span><span class="p">:</span>     <span class="nb">str</span>
+    <span class="n">date</span><span class="p">:</span>    <span class="n">PostDate</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span>
+</code></pre></div>
+
 <p>The best part of putting all the attributes in a class in this case is that
 the templating engine <code>chevron</code> can easily use these variables:</p>
-<pre><code class="language-py">with open('template/post.html', 'r') as f:
-    rendered = chevron.render(f, self.__dict__)
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;template/post.html&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">rendered</span> <span class="o">=</span> <span class="n">chevron</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+</code></pre></div>
+
 <p><code>chevron</code> takes in a <code>dict</code> for variables, but luckily in scripting languages like Python,
 it is easy to convert between an object and <code>dict</code>. In Ruby, you use the <code>.attributes</code> method
 to convert an object to a hash, and in Javascript, the object is already a hash.
@@ -80,33 +83,37 @@ I wonder how difficult it would be to do the same thing in C.</p>
 <h1>Sorting by Date</h1>
 <p>The landing page of this blog has a list of blogs sorted by date. I easily did that with this
 function:</p>
-<pre><code class="language-py">def add_and_sort(posts: List[Post], post: Post):
-    index = 0
-    for i in range(len(posts) - 1):
-        if posts[i].date.dt &gt;= post.date.dt &gt;= posts[i + 1].date.dt:
-            index = i
-            break
-    posts.insert(index, post)
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">add_and_sort</span><span class="p">(</span><span class="n">posts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Post</span><span class="p">],</span> <span class="n">post</span><span class="p">:</span> <span class="n">Post</span><span class="p">):</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">posts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">posts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">post</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">posts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+    <span class="n">posts</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">post</span><span class="p">)</span>
+</code></pre></div>
+
 <p>Focus on the line starting with <code>if</code>. in C, that statement would be more like:</p>
-<pre><code class="language-c">if (date_cmp(posts[i].date.dt, post.date.dt) &gt;= 0
-    &amp;&amp; date_cmp(post, posts[i + 1].date.dt) &gt;= 0)
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">date_cmp</span><span class="p">(</span><span class="n">posts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">date</span><span class="p">.</span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">post</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">dt</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">date_cmp</span><span class="p">(</span><span class="n">post</span><span class="p">,</span><span class="w"> </span><span class="n">posts</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">].</span><span class="n">date</span><span class="p">.</span><span class="n">dt</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
 <h1>The Highlighting Process</h1>
 <p>As you can see in the code blocks, this code is highlighted. How does this work?
 I used the "Fenced Code Blocks" python-markdown extension while processing the
 markdown in my script:</p>
-<pre><code class="language-py">def compile(self):
-    self.content = markdown(self.content, extensions=['fenced_code'])
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fenced_code&#39;</span><span class="p">])</span>
+</code></pre></div>
+
 <p>Whenever this extension detects a markdown code block that has a name after the
 opening three backticks, it adds it to a class based on the name.
 For example, for the upper code block:</p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class=&quot;language-py&quot;&gt;
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;&lt;</span><span class="nt">code</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;language-py&quot;</span><span class="p">&gt;</span>
 def compile(self):
-    self.content = markdown(self.content, extensions=['fenced_code'])
-&lt;/code&gt;&lt;/pre&gt;
-</code></pre>
+    self.content = markdown(self.content, extensions=[&#39;fenced_code&#39;])
+<span class="p">&lt;/</span><span class="nt">code</span><span class="p">&gt;&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</code></pre></div>
+
 <p>The script <code>highlight.js</code> recognizes this, and highlights the code. It is the only
 client-side code in my site (besides the obligatory method call to it), so my blog is
 very minimal and fast. Although <code>highlight.js</code> highlights on the client-side, it
@@ -124,11 +131,12 @@ about CSS, and I have to make sure everything looks just right.
 Eventually, though, I got to my current style, and I think it looks very beautiful.
 The borders on the code blocks were actually unintentional, as they were a side efect
 of this CSS:</p>
-<pre><code class="language-css">pre {
-    background-color: #333;
-    padding: 10px;
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nt">pre</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#333</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">px</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
 <p>Although there is no actual border, the padding of the <code>pre</code> element combined with its
 dark color against my <code>highlight.js</code> theme's light background color creates the border. I actually find it very nice, and I think it goes well with my website.</p>
         </div>

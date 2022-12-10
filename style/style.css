@@ -81,13 +81,13 @@ li {
 }
 
 pre {
-    background-color: #333;
+    background-color: #282828;
     padding: 10px;
 }
 
 pre > code {
     font-size: 17px;
-    color: #fff;
+    color: #ebdbb2;
 }
 
 img {

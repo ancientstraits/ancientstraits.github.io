@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AncientStraits</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/vs.min.css">
     <link rel="stylesheet" href="style/style.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="style/codehilite.css">
     <script>hljs.highlightAll()</script>
 </head>
 <body>
@@ -27,32 +26,33 @@ It also is not needed to <code>malloc()</code> a whole new memory buffer and cop
 However, there is not much information on how to do this online, especially when compared to other, perhaps inferior, techniques.
 My favorite (and only) resource of recounting how this technique works is <a href="https://www.youtube.com/watch?v=m7E9piHcfr4">Jacob Sorber's video</a>, and I am writing this post so I can more quickly find out how to use memory-mapped files if I ever forget.</p>
 <h1>The Code</h1>
-<pre><code class="language-c">int main() {
-    // First, open the file
-    int fd = open(&quot;filename&quot;, O_RDONLY);
-    // Then, get the length of the file
-    struct stat sb;
-    fstat(fd, &amp;sb);
-    // sb.st_size is the length
-    // Finally, use `mmap()`
-    char* file = mmap(NULL,
-        sb.st_size, // the memory region should be as large as the file
-        PROT_READ, // readonly memory
-        MAP_PRIVATE, // can probably also be `MAP_SHARED`
-        fd, // get the data from our file descriptor
-        0 // start at the file's beginning
-    );
+<div class="codehilite"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// First, open the file</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open</span><span class="p">(</span><span class="s">&quot;filename&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">O_RDONLY</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Then, get the length of the file</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">stat</span><span class="w"> </span><span class="n">sb</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">fstat</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sb</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// sb.st_size is the length</span>
+<span class="w">    </span><span class="c1">// Finally, use `mmap()`</span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">sb</span><span class="p">.</span><span class="n">st_size</span><span class="p">,</span><span class="w"> </span><span class="c1">// the memory region should be as large as the file</span>
+<span class="w">        </span><span class="n">PROT_READ</span><span class="p">,</span><span class="w"> </span><span class="c1">// readonly memory</span>
+<span class="w">        </span><span class="n">MAP_PRIVATE</span><span class="p">,</span><span class="w"> </span><span class="c1">// can probably also be `MAP_SHARED`</span>
+<span class="w">        </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="c1">// get the data from our file descriptor</span>
+<span class="w">        </span><span class="mi">0</span><span class="w"> </span><span class="c1">// start at the file&#39;s beginning</span>
+<span class="w">    </span><span class="p">);</span><span class="w"></span>
 
-    // `file` can be used like any other memory buffer
-    // For example, the following code prints the file
-    for (int i = 0; i &lt; sb.st_size; i++)
-        putchar(file[i]);
+<span class="w">    </span><span class="c1">// `file` can be used like any other memory buffer</span>
+<span class="w">    </span><span class="c1">// For example, the following code prints the file</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sb</span><span class="p">.</span><span class="n">st_size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">putchar</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="w"></span>
 
-    // Finish everything
-    munmap(file, sb.st_size);
-    close(fd);
-}
-</code></pre>
+<span class="w">    </span><span class="c1">// Finish everything</span>
+<span class="w">    </span><span class="n">munmap</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="n">sb</span><span class="p">.</span><span class="n">st_size</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
 <h1>Conclusion</h1>
 <p><code>mmap()</code> is a great file IO method, since it is both easy to write and also speedy.
 One problem is that <code>mmap()</code> is POSIX, meaning that it works on Linux, MacOS, and other Unix operating systems, but not Windows.
