@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name=og:title content=A Small Update>
+	<meta name=og:url content=ancientstraits.github.io>
+
+    <title>AncientStraits</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/codehilite.css">
+    <script>hljs.highlightAll()</script>
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">A Small Update</h1>
+        <h2 class="date">0 Dec 2022 at 03:58 PM</h2>
+        <hr>
+        <div class="content">
+            <p>I have updated the <a href="https://github.io/ancientstraits/ancientstraits.github.io">blogging system</a> in two new ways:</p>
+<ol>
+<li>Replaced <code>highlight.js</code> (client-side) with <code>pygments</code> (server-side) for syntax highlighting</li>
+<li>Added <code>meta</code> OpenGraph tags to make links look better in embeds</li>
+</ol>
+<h1>Pygments and CodeHilite</h1>
+<p>Initially, my blogging script, <a href="https://github.com/ancientstraits/ancientstraits.github.io/blob/master/ssg.py">ssg.py</a>,
+has worked by solely using the <code>fenced_code_blocks</code> extension for <code>python-markdown</code>, which puts code into a <code>pre</code> element without adding syntax highlighting.
+The blog post used to load <code>highlight.js</code> into the browser to highlight the code blocks after the page was loaded.
+This is clearly inefficient, because it adds JavaScript(TM) to my blog pages, and forces the browser to parse each block of code whenever it is loaded.
+Now, the page uses <code>python-markdown</code>'s CodeHilite extension instead, which separates each lexical block into a <code>span</code> element, each of which is highlighted with a CSS class.
+These CSS classes can be styled by using <code>pygments</code> to export a CSS file to implement the color of each class:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">pygments_css</span><span class="p">(</span><span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="s1">&#39;.codehilite&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">pygments</span><span class="o">.</span><span class="n">formatters</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">HtmlFormatter</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">get_style_defs</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="n">arg</span><span class="p">)</span>
+
+<span class="n">Which</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">equivalent</span> <span class="n">of</span> <span class="err">`</span><span class="n">pygmentize</span> <span class="o">-</span><span class="n">S</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span> <span class="o">-</span><span class="n">f</span> <span class="n">html</span> <span class="o">-</span><span class="n">a</span> <span class="o">.</span><span class="n">codehilite</span><span class="err">`</span> <span class="ow">in</span> <span class="n">Bash</span><span class="o">.</span>
+<span class="n">As</span> <span class="n">of</span> <span class="n">writing</span><span class="p">,</span> <span class="n">I</span> <span class="n">have</span> <span class="n">chosen</span> <span class="n">this</span> <span class="n">style</span> <span class="n">to</span> <span class="n">be</span> <span class="err">`</span><span class="n">gruvbox</span><span class="o">-</span><span class="n">dark</span><span class="err">`</span><span class="o">.</span>
+<span class="n">Unfortunately</span><span class="p">,</span> <span class="n">I</span> <span class="n">cannot</span> <span class="n">change</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">style</span> <span class="n">of</span> <span class="n">the</span> <span class="n">codeblocks</span> <span class="n">simply</span> <span class="n">by</span> <span class="n">changing</span> <span class="n">the</span> <span class="err">`</span><span class="n">style</span><span class="err">`</span> <span class="n">argument</span><span class="p">,</span>
+<span class="n">since</span> <span class="n">I</span> <span class="n">also</span> <span class="n">have</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">foreground</span> <span class="ow">and</span> <span class="n">background</span> <span class="n">colors</span> <span class="n">manually</span> <span class="ow">in</span> <span class="err">`</span><span class="n">style</span><span class="o">/</span><span class="n">style</span><span class="o">.</span><span class="n">css</span><span class="err">`</span><span class="o">.</span>
+
+<span class="c1"># OpenGraph</span>
+<span class="n">OpenGraph</span> <span class="n">tags</span> <span class="n">are</span> <span class="n">used</span> <span class="n">when</span> <span class="n">someone</span> <span class="n">posts</span> <span class="n">your</span> <span class="n">program</span><span class="s1">&#39;s link to a social media site, such as Twitter.</span>
+<span class="n">They</span> <span class="n">are</span> <span class="n">used</span> <span class="n">to</span> <span class="n">retrieve</span> <span class="n">more</span> <span class="n">information</span><span class="p">,</span> <span class="n">so</span> <span class="n">that</span> <span class="n">a</span> <span class="n">box</span> <span class="n">of</span> <span class="n">info</span> <span class="n">about</span> <span class="n">the</span> <span class="n">website</span> <span class="n">appears</span> <span class="n">under</span> <span class="n">the</span> <span class="n">message</span> <span class="n">where</span> <span class="n">the</span> <span class="n">link</span> <span class="n">was</span> <span class="n">posted</span><span class="o">.</span>
+<span class="n">I</span> <span class="n">have</span> <span class="n">added</span> <span class="err">`</span><span class="n">title</span><span class="err">`</span> <span class="ow">and</span> <span class="err">`</span><span class="n">url</span><span class="err">`</span> <span class="n">tags</span> <span class="n">to</span> <span class="n">my</span> <span class="n">post</span> <span class="n">template</span><span class="p">:</span>
+<span class="err">```</span><span class="n">html</span>
+<span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">og</span><span class="p">:</span><span class="n">title</span> <span class="n">content</span><span class="o">=</span><span class="p">{{</span><span class="n">title</span><span class="p">}}</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">og</span><span class="p">:</span><span class="n">url</span> <span class="n">content</span><span class="o">=</span><span class="n">ancientstraits</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>This will perhaps make my posts gain more popularity when shared.</p>
+        </div>
+    </div>
+</body>
+</html>
