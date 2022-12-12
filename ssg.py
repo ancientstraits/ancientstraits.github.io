@@ -57,7 +57,7 @@ class PostDate:
         self.dt = dt
 
     def __str__(self) -> str:
-        return self.dt.strftime('%w %b %Y at %I:%M %p')
+        return self.dt.strftime('%d %b %Y at %I:%M %p')
 
 
 class Post:
