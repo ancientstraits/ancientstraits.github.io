@@ -5,13 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<meta name=og:title content=A Small Update>
+	<meta name=og:title content="A Small Update">
 	<meta name=og:url content=ancientstraits.github.io>
 
     <title>AncientStraits</title>
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/codehilite.css">
-    <script>hljs.highlightAll()</script>
 </head>
 <body>
     <header><a href=index.html>
@@ -19,7 +18,7 @@
     </a></header>
     <div class="post">
         <h1 class="title">A Small Update</h1>
-        <h2 class="date">0 Dec 2022 at 03:58 PM</h2>
+        <h2 class="date">12 Dec 2022 at 10:57 AM</h2>
         <hr>
         <div class="content">
             <p>I have updated the <a href="https://github.io/ancientstraits/ancientstraits.github.io">blogging system</a> in two new ways:</p>
@@ -37,19 +36,18 @@ These CSS classes can be styled by using <code>pygments</code> to export a CSS f
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">pygments_css</span><span class="p">(</span><span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="s1">&#39;.codehilite&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">fmt</span> <span class="o">=</span> <span class="n">pygments</span><span class="o">.</span><span class="n">formatters</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">HtmlFormatter</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">get_style_defs</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="n">arg</span><span class="p">)</span>
+</code></pre></div>
 
-<span class="n">Which</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">equivalent</span> <span class="n">of</span> <span class="err">`</span><span class="n">pygmentize</span> <span class="o">-</span><span class="n">S</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span> <span class="o">-</span><span class="n">f</span> <span class="n">html</span> <span class="o">-</span><span class="n">a</span> <span class="o">.</span><span class="n">codehilite</span><span class="err">`</span> <span class="ow">in</span> <span class="n">Bash</span><span class="o">.</span>
-<span class="n">As</span> <span class="n">of</span> <span class="n">writing</span><span class="p">,</span> <span class="n">I</span> <span class="n">have</span> <span class="n">chosen</span> <span class="n">this</span> <span class="n">style</span> <span class="n">to</span> <span class="n">be</span> <span class="err">`</span><span class="n">gruvbox</span><span class="o">-</span><span class="n">dark</span><span class="err">`</span><span class="o">.</span>
-<span class="n">Unfortunately</span><span class="p">,</span> <span class="n">I</span> <span class="n">cannot</span> <span class="n">change</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">style</span> <span class="n">of</span> <span class="n">the</span> <span class="n">codeblocks</span> <span class="n">simply</span> <span class="n">by</span> <span class="n">changing</span> <span class="n">the</span> <span class="err">`</span><span class="n">style</span><span class="err">`</span> <span class="n">argument</span><span class="p">,</span>
-<span class="n">since</span> <span class="n">I</span> <span class="n">also</span> <span class="n">have</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">foreground</span> <span class="ow">and</span> <span class="n">background</span> <span class="n">colors</span> <span class="n">manually</span> <span class="ow">in</span> <span class="err">`</span><span class="n">style</span><span class="o">/</span><span class="n">style</span><span class="o">.</span><span class="n">css</span><span class="err">`</span><span class="o">.</span>
-
-<span class="c1"># OpenGraph</span>
-<span class="n">OpenGraph</span> <span class="n">tags</span> <span class="n">are</span> <span class="n">used</span> <span class="n">when</span> <span class="n">someone</span> <span class="n">posts</span> <span class="n">your</span> <span class="n">program</span><span class="s1">&#39;s link to a social media site, such as Twitter.</span>
-<span class="n">They</span> <span class="n">are</span> <span class="n">used</span> <span class="n">to</span> <span class="n">retrieve</span> <span class="n">more</span> <span class="n">information</span><span class="p">,</span> <span class="n">so</span> <span class="n">that</span> <span class="n">a</span> <span class="n">box</span> <span class="n">of</span> <span class="n">info</span> <span class="n">about</span> <span class="n">the</span> <span class="n">website</span> <span class="n">appears</span> <span class="n">under</span> <span class="n">the</span> <span class="n">message</span> <span class="n">where</span> <span class="n">the</span> <span class="n">link</span> <span class="n">was</span> <span class="n">posted</span><span class="o">.</span>
-<span class="n">I</span> <span class="n">have</span> <span class="n">added</span> <span class="err">`</span><span class="n">title</span><span class="err">`</span> <span class="ow">and</span> <span class="err">`</span><span class="n">url</span><span class="err">`</span> <span class="n">tags</span> <span class="n">to</span> <span class="n">my</span> <span class="n">post</span> <span class="n">template</span><span class="p">:</span>
-<span class="err">```</span><span class="n">html</span>
-<span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">og</span><span class="p">:</span><span class="n">title</span> <span class="n">content</span><span class="o">=</span><span class="p">{{</span><span class="n">title</span><span class="p">}}</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="n">og</span><span class="p">:</span><span class="n">url</span> <span class="n">content</span><span class="o">=</span><span class="n">ancientstraits</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">&gt;</span>
+<p>Which is the Python equivalent of <code>pygmentize -S [style] -f html -a .codehilite</code> in Bash.
+As of writing, I have chosen this style to be <code>gruvbox-dark</code>.
+Unfortunately, I cannot change the whole style of the codeblocks simply by changing the <code>style</code> argument,
+since I also have to change the foreground and background colors manually in <code>style/style.css</code>.</p>
+<h1>OpenGraph</h1>
+<p>OpenGraph tags are used when someone posts your program's link to a social media site, such as Twitter.
+They are used to retrieve more information, so that a box of info about the website appears under the message where the link was posted.
+I have added <code>title</code> and <code>url</code> tags to my post template:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">og:title</span> <span class="na">content</span><span class="o">=</span><span class="s">{{title}}</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">og:url</span> <span class="na">content</span><span class="o">=</span><span class="s">ancientstraits.github.io</span><span class="p">&gt;</span>
 </code></pre></div>
 
 <p>This will perhaps make my posts gain more popularity when shared.</p>

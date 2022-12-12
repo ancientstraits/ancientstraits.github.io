@@ -5,13 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<meta name=og:title content=Declarative Programming>
+	<meta name=og:title content="Declarative Programming">
 	<meta name=og:url content=ancientstraits.github.io>
 
     <title>AncientStraits</title>
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/codehilite.css">
-    <script>hljs.highlightAll()</script>
 </head>
 <body>
     <header><a href=index.html>
@@ -19,7 +18,7 @@
     </a></header>
     <div class="post">
         <h1 class="title">Declarative Programming</h1>
-        <h2 class="date">5 May 2022 at 10:42 PM</h2>
+        <h2 class="date">12 Dec 2022 at 10:57 AM</h2>
         <hr>
         <div class="content">
             <p>The reader (that is you) must have learnt about declarative programming.
@@ -55,12 +54,12 @@ tells a computer to let <code>oc-&gt;vf</code> be a video frame based on <code>o
 that it's still primarily imperative, because it's using an imperative library in an
 imperative programming language. The reader's first thought when hearing the word
 "declarative programming" might be a React component:</p>
-<div class="codehilite"><pre><span></span><code><span class="kd">const</span> <span class="nx">MyComponent</span> <span class="o">=</span> <span class="p">({</span><span class="nx">time</span><span class="p">})</span> <span class="p">=&gt;</span> <span class="p">(</span>
-    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">}}</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">The</span> <span class="nx">Time</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
-        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">The</span> <span class="nx">time</span> <span class="nx">is</span> <span class="p">{</span><span class="nx">time</span><span class="p">}.</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="p">)</span>
+<div class="codehilite"><pre><span></span><code>const MyComponent = ({time}) =&gt; (
+    <span class="nt">&lt;div</span> <span class="na">style=</span><span class="cp">{{</span><span class="nv">color</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="cp">}}</span><span class="err">&gt;</span>
+        <span class="s">&lt;h1</span><span class="nt">&gt;</span>The Time<span class="nt">&lt;/h1&gt;</span>
+        <span class="nt">&lt;p&gt;</span>The time is {time}.<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+)
 </code></pre></div>
 
 <p>In this case, <code>MyComponent</code> is declarative because it is returning the UI,
@@ -85,12 +84,12 @@ it gets much worse when trying to draw something animated:</p>
 </code></pre></div>
 
 <p>Definitely not something you can return. This could also not use iteration/recursion if the API stored the current time. Then it could all be declarative.</p>
-<div class="codehilite"><pre><span></span><code><span class="kd">const</span> <span class="nx">Rect</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">frame</span> <span class="o">=</span> <span class="nx">useCurrentFrame</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">svg</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="nx">rect</span> <span class="nx">x</span><span class="o">=</span><span class="p">{</span><span class="nx">frame</span><span class="p">}</span> <span class="nx">y</span><span class="o">=</span><span class="s2">&quot;100&quot;</span> <span class="nx">width</span><span class="o">=</span><span class="s2">&quot;20&quot;</span> <span class="nx">height</span><span class="o">=</span><span class="s2">&quot;20&quot;</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="err">/svg&gt;)</span>
-<span class="p">}</span>
+<div class="codehilite"><pre><span></span><code>const Rect = () =&gt; {
+    const frame = useCurrentFrame()
+    return (<span class="nt">&lt;svg&gt;</span>
+        <span class="nt">&lt;rect</span> <span class="na">x=</span><span class="s">{frame}</span> <span class="na">y=</span><span class="s">&quot;100&quot;</span> <span class="na">width=</span><span class="s">&quot;20&quot;</span> <span class="na">height=</span><span class="s">&quot;20&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/svg&gt;</span>)
+}
 </code></pre></div>
 
 <p>The above example is easy to understand because it just makes a vector of a rect with its
