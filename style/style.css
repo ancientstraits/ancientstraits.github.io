@@ -83,6 +83,7 @@ li {
 pre {
     background-color: #282828;
     padding: 10px;
+	overflow: scroll;
 }
 
 pre > code {
