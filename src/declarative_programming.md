@@ -33,7 +33,7 @@ Although my example could be considered declarative, the reader (you again) prob
 that it's still primarily imperative, because it's using an imperative library in an
 imperative programming language. The reader's first thought when hearing the word
 "declarative programming" might be a React component:
-```js
+```jsx
 const MyComponent = ({time}) => (
     <div style={{color: 'blue'}}>
         <h1>The Time</h1>
@@ -64,7 +64,7 @@ const loop = () => {
 }
 ```
 Definitely not something you can return. This could also not use iteration/recursion if the API stored the current time. Then it could all be declarative.
-```js
+```jsx
 const Rect = () => {
     const frame = useCurrentFrame()
     return (<svg>

@@ -11,11 +11,10 @@ This is clearly inefficient, because it adds JavaScript(TM) to my blog pages, an
 Now, the page uses `python-markdown`'s CodeHilite extension instead, which separates each lexical block into a `span` element, each of which is highlighted with a CSS class.
 These CSS classes can be styled by using `pygments` to export a CSS file to implement the color of each class:
 ```py
-
 def pygments_css(style: str, arg='.codehilite') -> str:
     fmt = pygments.formatters.html.HtmlFormatter(style=style)
     return fmt.get_style_defs(arg=arg)
-
+```
 Which is the Python equivalent of `pygmentize -S [style] -f html -a .codehilite` in Bash.
 As of writing, I have chosen this style to be `gruvbox-dark`.
 Unfortunately, I cannot change the whole style of the codeblocks simply by changing the `style` argument,
