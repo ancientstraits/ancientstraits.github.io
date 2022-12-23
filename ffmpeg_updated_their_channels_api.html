@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name=og:title content="Ffmpeg Updated Their Channels Api">
+	<meta name=og:url content=ancientstraits.github.io>
+
+    <title>AncientStraits</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/codehilite.css">
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">Ffmpeg Updated Their Channels Api</h1>
+        <h2 class="date">23 Dec 2022 at 05:48 PM</h2>
+        <hr>
+        <div class="content">
+            <p>On the outside, <code>ffmpeg</code> seems like a very nice piece of software.
+The <code>ffmpeg</code> command lets you convert videos into different formats and even pipe raw data very easily.
+However, this CLI is simply an interface on top of a much larger (and scarier) set of libraries, including
+<code>libavcodec</code> to encode and decode video,
+<code>libavformat</code> to "open" and "close" video containers,
+<code>libavfilter</code> to apply various filters to videos,
+and several other libraries offering various utilities.</p>
+<p>My application <a href="https://github.com/ancientstraits/codim">codim</a> relies on FFmpeg to export an mp4 file.
+A couple months ago, I had to go through the grueling process of writing code that interfaced with the libraries I listed.
+The APIs can truly be unintuitive at times, and any subtle mistake can cause a frightening <code>segmentation fault (core dumped)</code>.
+Yet I was able to finish the video-exporting code, and did not have to worry about it ever since.</p>
+<p>Until I ran <code>make -B</code>.
+Then, I saw the warnings:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">src</span><span class="o">/</span><span class="nt">output</span><span class="p">.</span><span class="nc">c</span><span class="p">:</span><span class="nd">100</span><span class="p">:</span><span class="nd">47</span><span class="o">:</span><span class="w"> </span><span class="nt">warning</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;channels&#39;</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">deprecated</span><span class="w"> </span><span class="cp">[</span><span class="na">-Wdeprecated-declarations</span><span class="cp">]</span><span class="w"></span>
+<span class="w">        </span><span class="nt">av_opt_set_int</span><span class="o">(</span><span class="nt">ret</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;in_channel_count&quot;</span><span class="o">,</span><span class="w"> </span><span class="nt">acc-</span><span class="o">&gt;</span><span class="nt">channels</span><span class="o">,</span><span class="w"> </span><span class="nt">0</span><span class="o">);</span><span class="w"></span>
+<span class="o">...</span><span class="w"></span>
+<span class="nt">src</span><span class="o">/</span><span class="nt">output</span><span class="p">.</span><span class="nc">c</span><span class="p">:</span><span class="nd">85</span><span class="p">:</span><span class="nd">27</span><span class="o">:</span><span class="w"> </span><span class="nt">warning</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;channel_layout&#39;</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">deprecated</span><span class="w"> </span><span class="cp">[</span><span class="na">-Wdeprecated-declarations</span><span class="cp">]</span><span class="w"></span>
+<span class="w">        </span><span class="nt">f-</span><span class="o">&gt;</span><span class="nt">channel_layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nt">acc-</span><span class="o">&gt;</span><span class="nt">channel_layout</span><span class="o">;</span><span class="w"></span>
+<span class="o">...</span><span class="w"></span>
+<span class="nt">src</span><span class="o">/</span><span class="nt">output</span><span class="p">.</span><span class="nc">c</span><span class="p">:</span><span class="nd">58</span><span class="p">:</span><span class="nd">26</span><span class="o">:</span><span class="w"> </span><span class="nt">warning</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;av_get_channel_layout_nb_channels&#39;</span><span class="w"> </span><span class="nt">is</span><span class="w"> </span><span class="nt">deprecated</span><span class="w"> </span><span class="cp">[</span><span class="na">-Wdeprecated-declarations</span><span class="cp">]</span><span class="w"></span>
+<span class="w">                </span><span class="nt">oc-</span><span class="o">&gt;</span><span class="nt">acc-</span><span class="o">&gt;</span><span class="nt">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nt">av_get_channel_layout_nb_channels</span><span class="o">(</span><span class="nt">oc-</span><span class="o">&gt;</span><span class="nt">acc-</span><span class="o">&gt;</span><span class="nt">channel_layout</span><span class="o">);</span><span class="w"></span>
+</code></pre></div>
+
+<p>It seemed that <code>ffmpeg</code> had made some changes to its <code>channel</code> API.
+I support breaking changes to projects in order to make them better, and there are only a few changes to make.
+So it is time to do it.</p>
+<h1>The New Channel API</h1>
+<p>Instead of <code>AVCodecContext-&gt;channel_layout</code>, I was meant to use <code>ch_layout</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * Audio channel layout.</span>
+<span class="cm"> * - encoding: set by user.</span>
+<span class="cm"> * - decoding: set by user, may be overwritten by libavcodec.</span>
+<span class="cm"> * @deprecated use ch_layout</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">attribute_deprecated</span><span class="w"></span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="n">channel_layout</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<p>And instead of <code>AVCodecContext-&gt;channels</code>, I was meant to use <code>ch_layout.nb_channels</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * number of audio channels</span>
+<span class="cm"> * @deprecated use ch_layout.nb_channels</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">attribute_deprecated</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="n">channels</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<p>This is the declaration for AVChannelLayout:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * Audio channel layout.</span>
+<span class="cm"> * - encoding: must be set by the caller, to one of AVCodec.ch_layouts.</span>
+<span class="cm"> * - decoding: may be set by the caller if known e.g. from the container.</span>
+<span class="cm"> *             The decoder can then override during decoding as needed.</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">AVChannelLayout</span><span class="w"> </span><span class="n">ch_layout</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<p>Look at what the comment asks for encoding. More stuff I have to do. At least it seems straighforward.
+I do not understand what a channel layout is, I did not back then, I do not now.
+My only objective is to meet the new API standards.</p>
+<p>And here is the declaration of <code>AVCodec-&gt;ch_layouts</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * Audio channel layout.</span>
+<span class="cm"> * - encoding: must be set by the caller, to one of AVCodec.ch_layouts.</span>
+<span class="cm"> * - decoding: may be set by the caller if known e.g. from the container.</span>
+<span class="cm"> *             The decoder can then override during decoding as needed.</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">AVChannelLayout</span><span class="w"> </span><span class="n">ch_layout</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<h1>Reimplementation</h1>
+<p>I will have to replace this code that <code>ffmpeg</code> deems as deprecated:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">oc</span><span class="o">-&gt;</span><span class="n">acc</span><span class="o">-&gt;</span><span class="n">channels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">av_get_channel_layout_nb_channels</span><span class="p">(</span><span class="n">oc</span><span class="o">-&gt;</span><span class="n">acc</span><span class="o">-&gt;</span><span class="n">channel_layout</span><span class="p">);</span><span class="w"></span>
+<span class="n">oc</span><span class="o">-&gt;</span><span class="n">acc</span><span class="o">-&gt;</span><span class="n">channel_layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AV_CH_LAYOUT_STEREO</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<p>I found this comment in the <code>AVChannelLayout</code> (type of <code>ch_layout</code>)'s documentation:</p>
+<div class="codehilite"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm"> * AVChannelLayout can be initialized as follows:</span>
+<span class="cm"> * - default initialization with {0}, followed by setting all used fields</span>
+<span class="cm"> *   correctly;</span>
+<span class="cm"> * - by assigning one of the predefined AV_CHANNEL_LAYOUT_* initializers; &lt;===!!!</span>
+<span class="cm"> * - with a constructor function, such as av_channel_layout_default(),</span>
+<span class="cm"> *   av_channel_layout_from_mask() or av_channel_layout_from_string().</span>
+<span class="cm"> */</span><span class="w"></span>
+</code></pre></div>
+
+<p>I also found, in the header, a <code>AV_CHANNEL_LAYOUT_STEREO</code>.
+This will help me greatly.</p>
+<p>I replaced my code with:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">oc</span><span class="o">-&gt;</span><span class="n">acc</span><span class="o">-&gt;</span><span class="n">ch_layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AV_CHANNEL_LAYOUT_STEREO</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
+
+<p>So it was swapping <code>ch</code> with <code>channel</code>. Pretty funny in my opinion.</p>
+<p>...except its NOT THAT SIMPLE! GCC hits me with a vague <code>expected expression</code> error!
+(this was probably because <code>AV_CHANNEL_LAYOUT_STEREO</code> expands into a struct literal,
+and it seems that you cannot assign an already-declared variable to a struct literal in C.)</p>
+<p>I finally found out from FFmpeg's wonderful <code>muxing.c</code> example file, the solution:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">av_channel_layout_copy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">ch_layout</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p">(</span><span class="n">AVChannelLayout</span><span class="p">)</span><span class="n">AV_CHANNEL_LAYOUT_STEREO</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+
+<p>A dedicated function to copy a few fields over. I love C so much.</p>
+<p>After changing it to:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">av_channel_layout_copy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">oc</span><span class="o">-&gt;</span><span class="n">acc</span><span class="o">-&gt;</span><span class="n">ch_layout</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p">(</span><span class="n">AVChannelLayout</span><span class="p">)</span><span class="n">AV_CHANNEL_LAYOUT_STEREO</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+
+<p>to suit my needs, I replaced some usages of <code>acc-&gt;channels</code> with <code>acc-&gt;ch_layout.nb_channels</code>,
+and now my program works perfectly! Very nice!</p>
+<p><a href="https://github.com/ancientstraits/codim/commit/c3d6475437219f35f786aa7db0fcc129a9234ebb">Relevant Commit</a></p>
+        </div>
+    </div>
+</body>
+</html>
