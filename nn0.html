@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name=og:title content="Neural Networks #0: Creating a One-Weight Program">
+	<meta name=og:url content=ancientstraits.github.io>
+
+    <title>AncientStraits</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/codehilite.css">
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">Neural Networks #0: Creating a One-Weight Program</h1>
+        <h2 class="date">24 Feb 2023 at 08:03 AM</h2>
+        <hr>
+        <div class="content">
+            <h1>Introduction</h1>
+<p>I am trying to learn machine learning.
+In order to do this, I will write a tiny neural network in C.</p>
+<p>In this network, we will only have an input value, an output value, and a weight.
+The input value will be known as <code>x</code>, and the weight will be known as <code>w</code>.
+The output value will be equal to the input multiplied by the weight, so it is <code>w*x</code>.
+The goal of the program is to make the output value of the neuron equal to the input.
+In other words, <code>w*x=x</code>.
+We know that <code>w</code> must be 1 in order for the output to equal the input.
+However, the computer does not know this, and it is its goal to get as close to 1 as possible.</p>
+<h1>The model and error checking</h1>
+<p>First, implement the <code>outval</code> function to compute the output value (<code>out=w*x</code>):</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="nf">outval</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>Then, implement the error.
+It is common to use <code>(a-b)^2</code> as a measure of how far <code>a</code> is from <code>b</code>,
+because as <code>b</code> get closer to <code>a</code>, the slope of the function gets closer to zero,
+which is great for training (later in this post).</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="nf">err</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="n">b</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>We just want the error as a function of the weight, for any value of <code>x</code>.
+To do this, create a function that calculates the average error when <code>0 &lt;= x &lt; 1</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="nf">avg_err</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_subdiv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="n">num_subdiv</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// got: outval(w, x)</span>
+<span class="w">        </span><span class="c1">// expected: x</span>
+<span class="w">        </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">err</span><span class="p">(</span><span class="n">outval</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">num_subdiv</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h1>Learning and Gradient Descent</h1>
+<p>Now that we have a way to calculate the error of <code>w</code>,
+how do we adjust them to be better?
+Our <code>avg_err</code> function has a minimum of 0.
+We can calculate the (average) slope of this <code>avg_err</code> function.
+Then, we subtract our slope from our weight to get closer to the minimum of the function.
+For example, if there is a negative slope, then we add the opposite (a positive number)
+to our weight, to get closer to the minimum.
+Since <code>(a-b)^2</code> is a quadratic function, its minimum has a slope of zero.
+As <code>w</code> gets closer to 1, the <code>avg_err</code> function's slope gets closer to zero.
+We can use this to find the minimum of the error, or where the model functions best.</p>
+<p>Write a function to calculate the slope of the error:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="nf">err_slope</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0001</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">err1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">avg_err</span><span class="p">(</span><span class="n">w</span><span class="p">),</span><span class="w"> </span><span class="n">err2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">avg_err</span><span class="p">(</span><span class="n">w</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dw</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">err2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">err1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dw</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>The closer <code>dw</code> is to 0, the more exact this slope is.
+It just uses the formula <code>slope = (y1-y2)/(x1-x2)</code>.
+In this case, it is <code>(avg_err(w+dw)-avg_err(w))/((w+dw)-(w))</code>,
+or <code>(avg_err(w+dw)-avg_err(w))/dw</code>.</p>
+<p>Now, we will write a function to subtract the slope from w.
+the <code>learn_rate</code> is multiplied by the slope to make sure that <code>w</code>
+does not "jump over" the minimum.
+For me, however, <code>1.0</code> worked well enough.
+The function is called <code>epoch</code> since each stage of training is an "epoch".</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">// returns a new value of w.</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">learn_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">slope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">err_slope</span><span class="p">(</span><span class="n">w</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;slope = %f; &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slope</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// found local minimum</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">learn_rate</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">slope</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<h1>Wrapping it Up</h1>
+<p>Finally, it is time to write the <code>main</code> function.
+It will train the model, print out statistics, and test the model after 100 rounds.</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define ROUNDS 100</span>
+
+<span class="c1">// ...</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">weight_correct</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ROUNDS</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Round %d: w is %f; &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">epoch</span><span class="p">(</span><span class="n">w</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;w becomes %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Final model: outval(0.3) = %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">outval</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">));</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>After running and compiling the code, we get the output:</p>
+<div class="codehilite"><pre><span></span><code>$ ./neuron
+Round <span class="m">0</span>: w is <span class="m">0</span>.000000<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.668168<span class="p">;</span> w becomes <span class="m">0</span>.668168
+Round <span class="m">1</span>: w is <span class="m">0</span>.668168<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.221133<span class="p">;</span> w becomes <span class="m">0</span>.889301
+Round <span class="m">2</span>: w is <span class="m">0</span>.889301<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.073803<span class="p">;</span> w becomes <span class="m">0</span>.963104
+Round <span class="m">3</span>: w is <span class="m">0</span>.963104<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.024586<span class="p">;</span> w becomes <span class="m">0</span>.987690
+Round <span class="m">4</span>: w is <span class="m">0</span>.987690<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.008179<span class="p">;</span> w becomes <span class="m">0</span>.995868
+Round <span class="m">5</span>: w is <span class="m">0</span>.995868<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.002723<span class="p">;</span> w becomes <span class="m">0</span>.998591
+Round <span class="m">6</span>: w is <span class="m">0</span>.998591<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000906<span class="p">;</span> w becomes <span class="m">0</span>.999498
+Round <span class="m">7</span>: w is <span class="m">0</span>.999498<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000302<span class="p">;</span> w becomes <span class="m">0</span>.999799
+Round <span class="m">8</span>: w is <span class="m">0</span>.999799<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000100<span class="p">;</span> w becomes <span class="m">0</span>.999900
+Round <span class="m">9</span>: w is <span class="m">0</span>.999900<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000033<span class="p">;</span> w becomes <span class="m">0</span>.999933
+Round <span class="m">10</span>: w is <span class="m">0</span>.999933<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000011<span class="p">;</span> w becomes <span class="m">0</span>.999944
+Round <span class="m">11</span>: w is <span class="m">0</span>.999944<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000004<span class="p">;</span> w becomes <span class="m">0</span>.999948
+Round <span class="m">12</span>: w is <span class="m">0</span>.999948<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000001<span class="p">;</span> w becomes <span class="m">0</span>.999949
+Round <span class="m">13</span>: w is <span class="m">0</span>.999949<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">14</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+
+...
+
+Round <span class="m">94</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">95</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">96</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">97</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">98</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Round <span class="m">99</span>: w is <span class="m">0</span>.999950<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> -0.000000<span class="p">;</span> w becomes <span class="m">0</span>.999950
+Final model: neuron<span class="o">(</span><span class="m">0</span>.3<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>.299985
+</code></pre></div>
+
+<p>Our model was able to get extremely close to <code>w = 1</code>. Very nice.
+You can find the source code <a href="https://gist.github.com/ancientstraits/936fecd67681fba309c76be57fe3b945">here</a>.</p>
+<h1>More Applications</h1>
+<p>What if the input value is added to, not multiplied by, the weight to get the output?
+This means that <code>out=w+x</code>.
+(In this case, <code>w</code> is not a weight, but a <strong>bias</strong>, since it is used for addition,
+not multiplication.)</p>
+<p>If we want the output to be equal to the input, or <code>w+x=x</code>, w has to be zero.
+Can the program do this? Yes!</p>
+<p>All we have to do is change the return statement of <code>outval</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">float</span> <span class="nv">outval</span><span class="ss">(</span><span class="nv">float</span> <span class="nv">w</span>, <span class="nv">float</span> <span class="nv">x</span><span class="ss">)</span> {
+    <span class="k">return</span> <span class="nv">w</span> <span class="o">+</span> <span class="nv">x</span><span class="c1">;</span>
+}
+</code></pre></div>
+
+<p>We must also change <code>learn_rate</code> in <code>epoch()</code> to <code>0.1</code>,
+or it will "jump over" the minimum.
+In <code>main()</code>, <code>w</code> should be initialized to something other than <code>0.0</code>,
+because we want to see the neural network train itself.</p>
+<p>After compiling, and running, this is the result:</p>
+<div class="codehilite"><pre><span></span><code>$ ./neuron
+Round <span class="m">0</span>: w is <span class="m">1</span>.000000<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">1</span>.949072<span class="p">;</span> w becomes <span class="m">0</span>.805093
+Round <span class="m">1</span>: w is <span class="m">0</span>.805093<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">1</span>.597404<span class="p">;</span> w becomes <span class="m">0</span>.645352
+Round <span class="m">2</span>: w is <span class="m">0</span>.645352<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">1</span>.287758<span class="p">;</span> w becomes <span class="m">0</span>.516577
+Round <span class="m">3</span>: w is <span class="m">0</span>.516577<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">1</span>.051426<span class="p">;</span> w becomes <span class="m">0</span>.411434
+Round <span class="m">4</span>: w is <span class="m">0</span>.411434<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.789464<span class="p">;</span> w becomes <span class="m">0</span>.332488
+Round <span class="m">5</span>: w is <span class="m">0</span>.332488<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.648722<span class="p">;</span> w becomes <span class="m">0</span>.267615
+Round <span class="m">6</span>: w is <span class="m">0</span>.267615<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.538304<span class="p">;</span> w becomes <span class="m">0</span>.213785
+Round <span class="m">7</span>: w is <span class="m">0</span>.213785<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.422858<span class="p">;</span> w becomes <span class="m">0</span>.171499
+Round <span class="m">8</span>: w is <span class="m">0</span>.171499<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.343304<span class="p">;</span> w becomes <span class="m">0</span>.137169
+Round <span class="m">9</span>: w is <span class="m">0</span>.137169<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.274647<span class="p">;</span> w becomes <span class="m">0</span>.109704
+Round <span class="m">10</span>: w is <span class="m">0</span>.109704<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.219373<span class="p">;</span> w becomes <span class="m">0</span>.087767
+
+...
+
+Round <span class="m">95</span>: w is -0.000050<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.000000<span class="p">;</span> w becomes -0.000050
+Round <span class="m">96</span>: w is -0.000050<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.000000<span class="p">;</span> w becomes -0.000050
+Round <span class="m">97</span>: w is -0.000050<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.000000<span class="p">;</span> w becomes -0.000050
+Round <span class="m">98</span>: w is -0.000050<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.000000<span class="p">;</span> w becomes -0.000050
+Round <span class="m">99</span>: w is -0.000050<span class="p">;</span> <span class="nv">slope</span> <span class="o">=</span> <span class="m">0</span>.000000<span class="p">;</span> w becomes -0.000050
+Final model: outval<span class="o">(</span><span class="m">0</span>.3<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>.299950
+</code></pre></div>
+
+<p>And the modified program has come very close as well to what we wanted (w=0)!
+This scenario shows how neural networks can very easily adapt to different scenarios.</p>
+<h1>Conclusion</h1>
+<p>(I hope that) this is the first (zeroth) blog post in a series on
+how to make neural networks.
+I do not really know a lot about neural networks,
+so I hope I can build one without having to learn or teach
+anything related to calculus or matrices or statistics.</p>
+<p>Perhaps in the next blog post, I will make a neural network with more than one
+input value, or input neuron.</p>
+        </div>
+    </div>
+</body>
+</html>
