@@ -71,12 +71,12 @@ float err_slope(float w) {
 }
 ```
 The closer `dw` is to 0, the more exact this slope is.
-It just uses the formula `slope = (y1-y2)/(x1-x2).
-In this case, it is `(avg\_err(w+dw)-avg\_err(w))/((w+dw)-(w))`,
-or `(avg\_err(w+dw)-avg\_err(w))/dw`.
+It just uses the formula `slope = (y1-y2)/(x1-x2)`.
+In this case, it is `(avg_err(w+dw)-avg_err(w))/((w+dw)-(w))`,
+or `(avg_err(w+dw)-avg_err(w))/dw`.
 
 Now, we will write a function to subtract the slope from w.
-the `learn\_rate` is multiplied by the slope to make sure that `w`
+the `learn_rate` is multiplied by the slope to make sure that `w`
 does not "jump over" the minimum.
 For me, however, `1.0` worked well enough.
 The function is called `epoch` since each stage of training is an "epoch".
@@ -170,7 +170,7 @@ float outval(float w, float x) {
 	return w + x;
 }
 ```
-We must also change `learn\_rate` in `epoch()` to `0.1`,
+We must also change `learn_rate` in `epoch()` to `0.1`,
 or it will "jump over" the minimum.
 In `main()`, `w` should be initialized to something other than `0.0`,
 because we want to see the neural network train itself.
