@@ -10,7 +10,7 @@ import shutil
 import subprocess
 from typing import List
 
-from markdown import markdown
+from markdown import markdown, Markdown
 from markdown.extensions.codehilite import CodeHiliteExtension
 import chevron
 import pygments
@@ -74,12 +74,19 @@ class Post:
             self.content = f.read()
 
     def compile(self):
-        self.content = markdown(self.content, extensions=['fenced_code', 'codehilite', 'sane_lists'])
+        md = Markdown(extensions=[
+            'fenced_code', 'codehilite', 'sane_lists', 'meta'
+        ])
+        self.content = md.convert(self.content)
+        if 'title' in md.Meta:
+            self.title = ' '.join(md.Meta['title'])
+
 
     def write(self):
-        filename = path.join('build', snake_case(self.title)) + '.html'
         with open('template/post.html', 'r') as f:
             rendered = chevron.render(f, self.__dict__)
+
+        filename = path.join('build', self.url)
         with open(filename, 'w', encoding='utf-8', errors='xmlcharrefreplace') as f:
             f.write(rendered)
 
