@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name=og:title content="Rotating Point">
+	<meta name=og:url content=ancientstraits.github.io>
+
+    <title>AncientStraits</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/codehilite.css">
+</head>
+<body>
+    <header><a href=index.html>
+        AncientStraits
+    </a></header>
+    <div class="post">
+        <h1 class="title">Rotating Point</h1>
+        <h2 class="date">14 Aug 2023 at 09:50 AM</h2>
+        <hr>
+        <div class="content">
+            <p>Today, I figured out how to rotate a point to any angle.
+It is actually much easier than it sounds to do.
+I couldn't get a grasp of how to do it, but I tried this new strategy, and it might help you too.
+The strategy revolves around the formulas used to rotate a point 90, 180, or 270 degrees.
+This is very simple math that is learned in middle school.</p>
+<h1>90-degree increments</h1>
+<p>Take the point <code>(1, 2)</code> for example.
+Rotation occurs counterclockwise, so rotating 90 degrees would give <code>(-2, 1)</code>,
+rotating 180 degrees would give <code>(-1, -2)</code>, and rotating 270 degrees would give <code>(2, -1)</code>:
+<img alt="image" src="https://github.com/ancientstraits/ancientstraits.github.io/assets/73802848/733a6f44-e944-4810-a867-fe10862a186b" /></p>
+<p>If we substitute <code>1</code> for <code>x</code> and <code>2</code> for <code>y</code>, we get:</p>
+<div class="codehilite"><pre><span></span><code>Angle (degrees) | Point
+--------------------------
+0               | (x, y)
+90              | (-y, x)
+180             | (-x, -y)
+270             | (y, -x)
+</code></pre></div>
+
+<p>Now, isolate the X-coordinate: <code>x, -y, -x, y</code>
+And now, what happens if we write each x-coord as <code>ax + by</code>?</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0</span><span class="n">y</span><span class="w"></span>
+<span class="mf">0</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="n">y</span><span class="w"></span>
+<span class="o">-</span><span class="mf">1</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0</span><span class="n">y</span><span class="w"></span>
+<span class="mf">0</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="n">y</span><span class="w"></span>
+</code></pre></div>
+
+<p>Look at the X-coefficients: <code>1, 0, -1, 0</code>. Does that look familiar? Exactly.</p>
+<h1>Trigonometry time</h1>
+<div class="codehilite"><pre><span></span><code><span class="gh">Angle (degrees) | cos(angle) | sin(angle)</span>
+<span class="gh">-----------------------------------------</span>
+0               |  1         |  0
+90              |  0         |  1
+180             | -1         |  0
+270             |  0         | -1
+</code></pre></div>
+
+<p>The X-coefficients are the same as <code>cos</code>,
+while the Y-coefficients are like <code>sin</code>, but with opposite signs, so <code>-sin</code>.
+Thus, the rotated X-coordinate is <code>cos(angle)*x - sin(angle)*y</code>.</p>
+<h1>Y coordinate</h1>
+<p>We can use the same method for the Y-coordinates:</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">0</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="n">y</span><span class="w"></span>
+<span class="mf">1</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0</span><span class="n">y</span><span class="w"></span>
+<span class="mf">0</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="n">y</span><span class="w"></span>
+<span class="o">-</span><span class="mf">1</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0</span><span class="n">y</span><span class="w"></span>
+</code></pre></div>
+
+<p>The X-coefficients are <code>sin</code>, and the Y-coefficients are <code>cos</code>,
+so we get <code>sin(angle)*x + cos(angle)*y</code>.</p>
+<p>This means that when rotating <code>(x, y)</code> by angle <code>a</code>,
+<code>newX = xcos(angle) - ysin(a)</code>, and <code>newY = xsin(a) + ycos(a)</code>.
+In other words, the rotated point is <code>(xcos(a) - ysin(a), xsin(a) + ycos(a))</code>.</p>
+<h1>Matrices</h1>
+<p>I was learning how to rotate a point for OpenGL, and graphics programmers like to use matrices to rotate points.
+You could very easily do this with matrices</p>
+<div class="codehilite"><pre><span></span><code>I lost interest here because matrices are very boring to explain, but you could multiply a vector by a rotation matrix.
+It does the same thing as the newX and newY thing does.
+</code></pre></div>
+        </div>
+    </div>
+</body>
+</html>
